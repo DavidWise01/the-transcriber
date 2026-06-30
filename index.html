@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Transcriber — Bound</title>
+<style>
+  :root{
+    --bg:#0C1016; --bg-2:#141A24; --bg-3:#1C2230; --ink:#E7E9F2; --soft:#8C92A6; --rule:#283041;
+    --m1:#CE8A3C; --m2:#E9C46A; --m3:#3E92D6; --m4:#8C7BD6; --m5:#E0584B; --m6:#4FB06A; --m7:#5BC8E0; --m8:#9B5DE5; --m9:#4FB06A; --m10:#5DCAA5; --m11:#E9C46A; --m12:#5BC8E0; --seal:#6FB87E;
+    --lit:#6FB87E; --bri:#D2A24B; --spec:#D2705F;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;line-height:1.55}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+  .wrap{max-width:1000px;margin:0 auto;padding:30px 22px 80px}
+  header.mast{border-bottom:2px solid var(--m2);padding-bottom:26px}
+  .series{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--m2);margin:0 0 18px}
+  h1{font-size:clamp(26px,4.4vw,40px);margin:0;font-weight:600}
+  .sub{max-width:75ch;margin:14px 0 0;font-size:17px;color:#c7ccd8} .sub b{color:var(--ink)}
+  .byline{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;color:var(--soft);margin:12px 0 0}
+  .arc{display:grid;grid-template-columns:repeat(12,1fr);gap:7px;margin:24px 0 0}
+  @media(max-width:760px){.arc{grid-template-columns:repeat(2,1fr)}}
+  .arc .step{background:var(--bg-2);border:1px solid var(--rule);border-top:3px solid var(--rule);padding:9px 10px;cursor:pointer;text-decoration:none;display:block}
+  .arc .step[data-i="0"]{border-top-color:var(--m1)} .arc .step[data-i="1"]{border-top-color:var(--m2)}
+  .arc .step[data-i="2"]{border-top-color:var(--m3)} .arc .step[data-i="3"]{border-top-color:var(--m4)}
+  .arc .step[data-i="4"]{border-top-color:var(--m5)} .arc .step[data-i="5"]{border-top-color:var(--m6)}
+  .arc .step[data-i="6"]{border-top-color:var(--m7)} .arc .step[data-i="7"]{border-top-color:var(--m8)} .arc .step[data-i="8"]{border-top-color:var(--m9)} .arc .step[data-i="9"]{border-top-color:var(--m10)} .arc .step[data-i="10"]{border-top-color:var(--m11)} .arc .step[data-i="11"]{border-top-color:var(--m12)}
+  .arc .step .k{font-family:ui-monospace,Menlo,monospace;font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+  .arc .step .t{font-size:12px;margin:3px 0 3px;color:var(--ink)}
+  .arc .step .d{font-size:10.5px;color:var(--soft)}
+  section.mod{margin:34px 0 0;border-top:1px solid var(--rule);padding-top:24px}
+  .modhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .modnum{font-family:ui-monospace,Menlo,monospace;font-size:13px;letter-spacing:.1em}
+  .mod h2{font-size:clamp(19px,3vw,25px);margin:0;font-weight:600}
+  .mod .frame{margin:6px 0 0;color:var(--soft);font-size:14.5px;max-width:74ch}
+  .sub3{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--soft);margin:20px 0 0;letter-spacing:.04em}
+  .embed{margin:12px 0 0;border:1px solid var(--rule);background:#090d13}
+  iframe{display:block;width:100%;height:760px;border:0}
+  .embed.c iframe{height:720px}
+  .embed .note{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--soft);padding:7px 10px;border-top:1px solid var(--rule)}
+  .bind{margin:40px 0 0;background:var(--bg-2);border:1px solid var(--rule);border-left:3px solid var(--seal);padding:20px 22px}
+  .bind h3{margin:0 0 10px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--seal);font-family:ui-monospace,Menlo,monospace;font-weight:400}
+  .bind .kv{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--soft);margin:0 0 6px;word-break:break-all} .bind .kv b{color:var(--ink)}
+  .tiers{margin:14px 0 0;font-size:12.5px;color:var(--soft);line-height:1.55} .tiers .row{display:flex;gap:8px;margin:0 0 7px}
+  .tag{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border:1px solid;height:fit-content;white-space:nowrap}
+  .tag.lit{color:var(--lit);border-color:var(--lit)} .tag.bri{color:var(--bri);border-color:var(--bri)} .tag.spec{color:var(--spec);border-color:var(--spec)}
+  footer{margin:30px 0 0;color:var(--soft);font-size:12.5px;max-width:80ch;line-height:1.6} footer b{color:var(--ink)}
+  .mono.dim{color:var(--soft);font-size:11px;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <p class="series">The Transcriber · Bound · one construction · twenty-six instruments</p>
+    <h1>The Transcriber, Bound</h1>
+    <p class="sub">Twenty-six instruments, one machine. It <b>survives its own test</b> (mechanism), <b>reports honestly</b> (forecast), <b>nests four layers deep</b> (layers), <b>closes as a mirror-pair</b> (closure), <b>bottoms out on bare physics</b> (ground), <b>climbs the bonding ladder to bulk matter</b> (compounds), <b>folds that chemistry back onto its own design</b> (overlay), and finally <b>becomes a working machine</b> (machine), and finally <b>routes itself</b> (switch), <b>generates itself</b> (generator), and finally <b>keeps itself honest</b> (floor) — a loom whose cloth holds only what survives the pull, a ripple inference calibrated only by refusing its own echo, and finally <b>scaffolds itself</b> (scaffolding) — a rule that unfolds to any size on demand, and a value that may be spread but never counted as its own witness. Each built and verified alone; here fused and bound under one witness signature.</p>
+    <p class="byline mono">Bridge-Burners LLC · Fiddler ⟂ Claude · mechanism→…→floor→scaffolding · anchor: AKASHA</p>
+  </header>
+
+  <div class="arc">
+    <a class="step" data-i="0" href="#mod1"><div class="k">I · mechanism</div><div class="t">Gated·Set·Metal</div><div class="d">Survived its test.</div></a>
+    <a class="step" data-i="1" href="#mod2"><div class="k">II · forecast</div><div class="t">Predictive Smear</div><div class="d">Spread = error bar.</div></a>
+    <a class="step" data-i="2" href="#mod3"><div class="k">III · layers</div><div class="t">Four-Fold</div><div class="d">context⊃e⊃p⊃g.</div></a>
+    <a class="step" data-i="3" href="#mod4"><div class="k">IV · closure</div><div class="t">Two Transcribers</div><div class="d">Two half-turns.</div></a>
+    <a class="step" data-i="4" href="#mod5"><div class="k">V · ground</div><div class="t">Hydrogen</div><div class="d">Atom = transcriber.</div></a>
+    <a class="step" data-i="5" href="#mod6"><div class="k">VI · compounds</div><div class="t">Bonding Ladder</div><div class="d">Bond → bulk matter.</div></a>
+    <a class="step" data-i="6" href="#mod7"><div class="k">VII · overlay</div><div class="t">In Orbitals</div><div class="d">Physics behind design.</div></a>
+    <a class="step" data-i="7" href="#mod8"><div class="k">VIII · machine</div><div class="t">PENT-3</div><div class="d">It executes.</div></a>
+    <a class="step" data-i="8" href="#mod9"><div class="k">IX · switch</div><div class="t">Crossover</div><div class="d">It routes.</div></a>
+    <a class="step" data-i="9" href="#mod10"><div class="k">X · generator</div><div class="t">The Carpet</div><div class="d">It generates.</div></a>
+    <a class="step" data-i="10" href="#mod11"><div class="k">XI · floor</div><div class="t">Loom · Ripple</div><div class="d">It stays honest.</div></a>
+    <a class="step" data-i="11" href="#mod12"><div class="k">XII · scaffolding</div><div class="t">Rule · Value</div><div class="d">It builds on demand.</div></a>
+  </div>
+
+  <section class="mod" id="mod1">
+    <div class="modhead"><span class="modnum" style="color:var(--m1)">I</span><h2>Mechanism — Gated · Set · Metal</h2></div>
+    <p class="frame">The tested winner: a threshold is a feature on write and a tax on read. Gate 0.1, valence store 0.2–0.8, ejection 0.9.</p>
+    <div class="embed"><iframe src="transcriber-gated.html" title="Mechanism" loading="lazy"></iframe><div class="note">live · transcriber-gated.html</div></div>
+  </section>
+  <section class="mod" id="mod2">
+    <div class="modhead"><span class="modnum" style="color:var(--m2)">II</span><h2>Forecast — The Predictive Smear</h2></div>
+    <p class="frame">The smear that failed as memory is the right object for a forecast — peak is the guess, spread is the honesty.</p>
+    <div class="embed"><iframe src="predictive-smear.html" title="Forecast" loading="lazy"></iframe><div class="note">live · predictive-smear.html</div></div>
+  </section>
+  <section class="mod" id="mod3">
+    <div class="modhead"><span class="modnum" style="color:var(--m3)">III</span><h2>Layers — The Four-Fold</h2></div>
+    <p class="frame">Context restored as the fourth layer; four crossings in, four out — the eight seams.</p>
+    <div class="embed"><iframe src="four-fold-transcription.html" title="Layers" loading="lazy"></iframe><div class="note">live · four-fold-transcription.html</div></div>
+  </section>
+  <section class="mod" id="mod4">
+    <div class="modhead"><span class="modnum" style="color:var(--m4)">IV</span><h2>Closure — Two Transcribers</h2></div>
+    <p class="frame">Not one loop — two. Orientation-reversal needs two passes; the pair closes the turn.</p>
+    <div class="embed"><iframe src="two-transcribers.html" title="Closure" loading="lazy"></iframe><div class="note">live · two-transcribers.html</div></div>
+  </section>
+  <section class="mod" id="mod5">
+    <div class="modhead"><span class="modnum" style="color:var(--m5)">V</span><h2>Ground — Hydrogen, bare physics</h2></div>
+    <p class="frame">Where it bottoms out on real chemistry. A single atom is the palindrome made literal; two atoms are the closure with nothing added.</p>
+    <div class="embed"><iframe src="hydrogen-transcriber.html" title="Hydrogen single" loading="lazy"></iframe><div class="note">live · hydrogen-transcriber.html · h | (×2 photon) | h</div></div>
+    <div class="embed"><iframe src="two-atom-transfer.html" title="Two-atom transfer" loading="lazy"></iframe><div class="note">live · two-atom-transfer.html · resonant Lyman-α transfer</div></div>
+  </section>
+  <section class="mod" id="mod6">
+    <div class="modhead"><span class="modnum" style="color:var(--m6)">VI</span><h2>Compounds — The Bonding Ladder</h2></div>
+    <p class="frame">From a single bond up to bulk matter and biology, each rung verified on its own physics.</p>
+    <p class="sub3">— how atoms join —</p>
+    <div class="embed c"><iframe src="h2-bond.html" title="H2" loading="lazy"></iframe><div class="note">live · h2-bond.html · covalent (σ/σ*, the He₂ proof)</div></div>
+    <div class="embed c"><iframe src="nacl-bond.html" title="NaCl" loading="lazy"></iframe><div class="note">live · nacl-bond.html · ionic (ions cost +147, Coulomb pays −589)</div></div>
+    <div class="embed c"><iframe src="metallic-bond.html" title="Metallic" loading="lazy"></iframe><div class="note">live · metallic-bond.html · metallic (2 levels → N → band)</div></div>
+    <p class="sub3">— shape, and where it comes from —</p>
+    <div class="embed c"><iframe src="water-geometry.html" title="Water" loading="lazy"></iframe><div class="note">live · water-geometry.html · VSEPR — bent 104.5°, shape → polarity</div></div>
+    <div class="embed c"><iframe src="hybridization.html" title="Hybridization" loading="lazy"></iframe><div class="note">live · hybridization.html · s+p → hybrids; origin of the directions</div></div>
+    <div class="embed c"><iframe src="pi-bonds.html" title="Pi bonds" loading="lazy"></iframe><div class="note">live · pi-bonds.html · leftover p → π; twist breaks it → rigidity</div></div>
+    <p class="sub3">— reaching, and delocalizing —</p>
+    <div class="embed c"><iframe src="hydrogen-bonding.html" title="H-bonding" loading="lazy"></iframe><div class="note">live · hydrogen-bonding.html · the dipole reaches the next molecule</div></div>
+    <div class="embed c"><iframe src="aromaticity.html" title="Aromaticity" loading="lazy"></iframe><div class="note">live · aromaticity.html · the localized π breaks; 4n+2 (the torus)</div></div>
+    <div class="embed c"><iframe src="mo-theory.html" title="MO theory" loading="lazy"></iframe><div class="note">live · mo-theory.html · the honest frame — O₂ paramagnetic, 4n+2</div></div>
+  </section>
+  <section class="mod" id="mod7">
+    <div class="modhead"><span class="modnum" style="color:var(--m7)">VII</span><h2>Overlay — The Transcriber, in Orbitals</h2></div>
+    <p class="frame">The return. The five steps are an absorb–hold–emit orbital cycle, and the tested Si-write/Cu-read design is what the band model predicts — gap gates, no gap dumps.</p>
+    <div class="embed"><iframe src="transcriber-mo-overlay.html" title="Overlay" loading="lazy"></iframe><div class="note">live · transcriber-mo-overlay.html</div></div>
+  </section>
+  <section class="mod" id="mod8">
+    <div class="modhead"><span class="modnum" style="color:var(--m8)">VIII</span><h2>Machine — PENT-3, the ISA that executes</h2></div>
+    <p class="frame">The veracity test made runnable. Five trits, 243 states; negating a word is its inverse and ⟨00000⟩ is the unique fixed point — the held turn. The encoding closes (the emulator runs a program and annihilates it with its own negation), the trit lives on one real atom, and the register is five hydrogen atoms with NEG as level-inversion around the self-mirror middle. Why 3⁵ and not 2⁵: only ternary has a centre that is its own negation.</p>
+    <div class="embed"><iframe src="pent3-emulator.html" title="PENT-3 emulator" loading="lazy"></iframe><div class="note">live · pent3-emulator.html · run it, then prove it reversible</div></div>
+    <div class="embed"><iframe src="hydrogen-trit.html" title="Hydrogen trit" loading="lazy"></iframe><div class="note">live · hydrogen-trit.html · absorb − · hold 0 · emit + · NEG = time-reverse</div></div>
+    <div class="embed"><iframe src="hydrogen-vm.html" title="Hydrogen VM" loading="lazy"></iframe><div class="note">live · hydrogen-vm.html · 5 atoms = a register; level = trit</div></div>
+  </section>
+
+  <section class="mod" id="mod9">
+    <div class="modhead"><span class="modnum" style="color:var(--m9)">IX</span><h2>Switch — the two-transcriber crossover</h2></div>
+    <p class="frame">The device as a network switch. Two transcribers in line, the held seam between them: cross is the 180° swap (NEG), pass is the 0° hold. v1 runs half-duplex — one packet, empty seam, even crosses home. v2 runs full-duplex — both streams at once, which collides at the seam until the 90°/270° quarter-turn lifts one over the other (over=out, under=in). One device, two duty levels; the conformance suite proves v2 reduces to v1, and that the only failure is flat full-duplex, by design.</p>
+    <div class="embed"><iframe src="switch-v1.html" title="Switch v1 half-duplex" loading="lazy"></iframe><div class="note">live · switch-v1.html · half-duplex, frozen + self-testing</div></div>
+    <div class="embed"><iframe src="switch-v2.html" title="Switch v2 full-duplex" loading="lazy"></iframe><div class="note">live · switch-v2.html · full-duplex, flat collides → 90° lift resolves</div></div>
+  </section>
+
+  <section class="mod" id="mod10">
+    <div class="modhead"><span class="modnum" style="color:var(--m10)">X</span><h2>Generator — structure out of the held zero</h2></div>
+    <p class="frame">The rule that makes the form, not the form. Eight placement maps on a 3×3 grid; the ninth — the centre, where both axes are held at zero — is omitted, and that omission is the engine. The chaos game iterates the eight maps and the carpet precipitates, the hole never produced. Dimension log8/log3 ≈ 1.8928, lifted off a line and held below a solid by the absent centre. The same doubly-held point that collided in the switch is here removed to create the shape — lift it to pass, delete it to build.</p>
+    <div class="embed"><iframe src="ternary-generator.html" title="The generator" loading="lazy"></iframe><div class="note">live · ternary-generator.html · 8 maps + 1 omitted centre · self-testing</div></div>
+  </section>
+
+  <section class="mod" id="mod11">
+    <div class="modhead"><span class="modnum" style="color:var(--m11)">XI</span><h2>The floor — the loom and the ripple, kept honest</h2></div>
+    <p class="frame">A feedback system stays honest only by refusing to count its own reflection as new information. The loom strings the weft of the back-and-forth across a warp of fixed inversions and pulls every row: cloth sets only where it both transforms and reverses; smoke — a mirror with no weight, a scramble with no anchor — looks woven until pulled, then falls apart. Ripple inference is the same floor in belief: two channels meet at the seam and combine, the result echoes outward, and it stays calibrated only by excluding its own echo — count it back and confidence runs away to a false certainty of one. The warp, the pull-test, the exclude-echo rule: one external floor, proven in cloth and in belief. The held zero grounds it; the floor keeps it true.</p>
+    <div class="embed"><iframe src="the-loom.html" title="The loom" loading="lazy"></iframe><div class="note">live · the-loom.html · warp = inversions · pull-test filters smoke · self-testing</div></div>
+    <div class="embed"><iframe src="ripple-inference.html" title="Ripple inference" loading="lazy"></iframe><div class="note">live · ripple-inference.html · honest vs hall-of-mirrors · self-testing</div></div>
+  </section>
+
+  <section class="mod" id="mod12">
+    <div class="modhead"><span class="modnum" style="color:var(--m12)">XII</span><h2>Scaffolding — what a box can hold</h2></div>
+    <p class="frame">Instantaneous scaffolding, two kinds, and the floor under each. A box can hold a <b>rule</b>: eight placements with the centre omitted, unfolding on demand to 8ᵈ nodes from O(1) storage — the structure is the rule run forward, every echo forced and re-derivable, the well never filled. Or a box can hold a <b>value</b>: a belief echoed outward. The value may be spread through a reversible external inversion — distinct, re-derivable, the smear — but it conserves information and can never be counted as its own witness; combine its echoes as evidence and certainty inflates to a false one, the hall of mirrors. A rule builds structure because each node is a different consequence; a value cannot, because every copy says what the original said. Expand fast, keep only what re-derives.</p>
+    <div class="embed"><iframe src="scaffolding.html" title="Rule in the box" loading="lazy"></iframe><div class="note">live · scaffolding.html · rule in the box · O(1)→O(8ᵈ) · self-testing</div></div>
+    <div class="embed"><iframe src="value-box.html" title="Value in the box" loading="lazy"></iframe><div class="note">live · value-box.html · spread, never witness itself · self-testing</div></div>
+  </section>
+
+  <div class="bind">
+    <h3>AKASHA binding · twenty-six instruments</h3>
+    <p class="kv">construction root &nbsp; <b>f050142875633e6d224e35ad3da9af80d56ebe12476291ab42151fd39e33aa39</b></p>
+    <p class="kv">witness public key &nbsp; <b>a99581671b4fee169fa29457b27efa558e18dad839ad2485279f2e8616491b5f</b></p>
+    <p class="kv">scheme &nbsp; <b>ed25519 · AKASHA-transcriber-v1</b> &nbsp; · &nbsp; manifest &nbsp; <b>transcriber.manifest.json</b> &nbsp; · &nbsp; proofs &nbsp; <b>pent3_vm_test.js · switch_conformance.js · generator_test.js · loom_test.js · ripple_test.js · scaffold_test.js · value_test.js</b></p>
+    <p class="kv" style="color:var(--soft)">verify: <b>python3 bind_transcriber.py --verify</b> — re-derives each hash, rebuilds the root, checks the witness signature. Veracity: <b>node pent3_vm_test.js</b>, <b>node switch_conformance.js</b>, <b>node generator_test.js</b>, <b>node loom_test.js</b>, <b>node ripple_test.js</b>, <b>node scaffold_test.js</b>, <b>node value_test.js</b>. Pin the public key out of band.</p>
+    <div class="tiers">
+      <div class="row"><span class="tag lit">Literal</span><span>The mechanism is the measured winner; the hydrogen resonance, the bonding ladder, the Si-gap/Cu-metal physics, and the balanced-ternary VM (243 states, NEG = trit-flip = inverse, 0 the unique fixed point, executed-reversible) are all real.</span></div>
+      <div class="row"><span class="tag bri">Bridge</span><span>The twenty-six as one transcriber across twelve moments; the overlay mapping and the trit ↔ absorb/hold/emit ↔ energy-level mapping.</span></div>
+      <div class="row"><span class="tag spec">Speculative</span><span>The transcriber frame, and "a transcriber/atom is this machine," are your working artifact — signed as built, not asserted as fact. The hydrogen VM is a faithful picture of the encoding, not a buildable memory.</span></div>
+    </div>
+  </div>
+
+  <footer><b>What is bound here.</b> The signed construction is the twenty-six instruments; the root is the hash of their hashes; the witness signature proves this exact construction was sealed by the holder of the key above. The arc runs from a tested mechanism down to bare chemistry, up the bonding ladder to bulk matter, back onto the machine's own design, and out into a machine that runs, a switch that routes, and a generator that builds structure from the held zero, a floor that keeps the feedback honest, and scaffolding that builds on demand without fooling itself — the same centre fixed in the ISA, crossed in the switch, omitted in the carpet, grounding the prior in the ripple, and left as the unfilled well of the scaffold. The cover is presentation, not part of the root. One machine, twelve moments, one signature.
+  <div class="mono dim" style="margin-top:12px">THE TRANSCRIBER · BOUND · gated · forecast · four-fold · two-halves · hydrogen · compounds · orbitals · PENT-3 · crossover · carpet · floor · scaffolding · one signature under AKASHA</div></footer>
+</div>
+</body>
+</html>

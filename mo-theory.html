@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resonance & MO theory — the honest picture</title>
+<style>
+  :root{
+    --bg:#0C1016; --bg-2:#141A24; --bg-3:#1C2230; --ink:#E7E9F2; --soft:#8C92A6; --rule:#283041;
+    --bond:#5BC8E0; --anti:#D2705F; --elec:#3E92D6; --phasep:#3E92D6; --phasen:#E0584B; --homo:#E9C46A;
+    --lit:#6FB87E; --bri:#D2A24B; --spec:#D2705F;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;line-height:1.5}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+  .wrap{max-width:1000px;margin:0 auto;padding:26px 22px 70px}
+  h1{font-size:clamp(22px,3.5vw,32px);margin:0;font-weight:600}
+  .sub{max-width:78ch;margin:12px 0 0;color:#c7ccd8;font-size:16px} .sub b{color:var(--ink)}
+  .byline{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.08em;color:var(--soft);margin:10px 0 0}
+  .stage{display:grid;grid-template-columns:1fr 296px;gap:20px;margin:24px 0 0}
+  @media(max-width:820px){.stage{grid-template-columns:1fr}}
+  .panel{background:var(--bg-2);border:1px solid var(--rule);padding:10px}
+  canvas{display:block;background:radial-gradient(ellipse at 50% 45%, #0f1622 0%, #090d13 80%);border:1px solid var(--rule);width:100%;height:auto}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  button{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--bg-3);border:1px solid var(--rule);padding:7px 11px;cursor:pointer}
+  button:hover{border-color:var(--soft)} button[aria-pressed="true"]{border-color:var(--bond);color:#a7e2f0}
+  .side{display:flex;flex-direction:column;gap:14px}
+  .card{background:var(--bg-2);border:1px solid var(--rule);padding:13px 14px}
+  .card h3{margin:0 0 8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);font-family:ui-monospace,Menlo,monospace;font-weight:400}
+  .card p{margin:0 0 8px;font-size:13px;color:#c7ccd8} .card p b{color:var(--ink)}
+  .stat{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--soft);display:flex;justify-content:space-between;margin:0 0 3px} .stat b{color:var(--ink)}
+  table.b{width:100%;border-collapse:collapse;font-size:12px} table.b td{padding:4px 4px;border-bottom:1px solid var(--rule);vertical-align:top}
+  table.b td.l{font-family:ui-monospace,Menlo,monospace;white-space:nowrap;color:var(--ink)} table.b td.r{color:var(--soft)}
+  .tiers{font-size:12px;color:var(--soft);line-height:1.5} .tiers .row{display:flex;gap:8px;margin:0 0 7px}
+  .tag{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border:1px solid;height:fit-content;white-space:nowrap}
+  .tag.lit{color:var(--lit);border-color:var(--lit)} .tag.bri{color:var(--bri);border-color:var(--bri)} .tag.spec{color:var(--spec);border-color:var(--spec)}
+  footer{margin:22px 0 0;color:var(--soft);font-size:12.5px;max-width:80ch;line-height:1.6} footer b{color:var(--ink)}
+  .mono.dim{color:var(--soft);font-size:11px;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Resonance &amp; molecular-orbital theory</h1>
+  <p class="sub">The honest picture under every cartoon. Lewis structures, hybrids, and resonance arrows all speak a <b>localized</b> language — bonds that live between two atoms — and they patch over delocalization by drawing several structures and averaging. MO theory drops the patch: atomic orbitals combine into <b>molecular orbitals that span the whole molecule</b> (N orbitals in, N orbitals out), filled lowest-first. Each combination is either <b style="color:var(--bond)">bonding</b> (in-phase, density between nuclei) or <b style="color:var(--anti)">antibonding</b> (out-of-phase, a node between), and the count of filled bonding minus antibonding is the bond order. This is what predicts the things the cartoons get wrong — that O₂ is magnetic, why benzene's magic number is 4n+2, why methane shows two ionization energies, not four.</p>
+  <p class="byline mono">Bridge-Burners LLC · Fiddler · LCAO · bonding/antibonding · the truth under resonance · anchor: AKASHA</p>
+
+  <div class="stage">
+    <div class="panel">
+      <canvas id="c" width="660" height="400" aria-label="Molecular orbital diagrams"></canvas>
+      <div class="controls">
+        <button id="mLcao" aria-pressed="true">LCAO diatomics</button>
+        <button id="mBz" aria-pressed="false">Benzene π MOs</button>
+        <span style="width:8px"></span>
+        <button id="h2" aria-pressed="false">H₂</button>
+        <button id="he2" aria-pressed="false">He₂</button>
+        <button id="n2" aria-pressed="false">N₂</button>
+        <button id="o2" aria-pressed="true">O₂</button>
+        <button id="lbl" aria-pressed="true">Labels</button>
+      </div>
+    </div>
+    <div class="side">
+      <div class="card">
+        <h3>State</h3>
+        <div class="stat"><span>view</span><b id="s-view">O₂ — LCAO</b></div>
+        <div class="stat"><span>bond order</span><b id="s-bo">2</b></div>
+        <div class="stat"><span>verdict</span><b id="s-verd">paramagnetic</b></div>
+      </div>
+      <div class="card">
+        <h3>Resonance vs MO</h3>
+        <p><b>Resonance</b> is the localized model confessing: when one Lewis structure won't do, draw several and call the molecule their average. The arrow ↔ is not the molecule flipping — it means neither drawing is real.</p>
+        <p><b>MO theory</b> never localizes in the first place. The resonance hybrid ≈ the filled bonding MOs; both describe one electron density, but MO handles delocalization, magnetism, and spectra directly.</p>
+      </div>
+      <div class="card">
+        <h3>What MO explains that Lewis can't</h3>
+        <table class="b">
+          <tr><td class="l">O₂ magnetic</td><td class="r">2 e⁻ in degenerate π* → unpaired → paramagnetic (Lewis says paired)</td></tr>
+          <tr><td class="l">He₂, bond 0</td><td class="r">σ + σ* both full → cancels</td></tr>
+          <tr><td class="l">4n+2</td><td class="r">closed bonding shell at 2,6,10 (Frost circle)</td></tr>
+          <tr><td class="l">colour</td><td class="r">HOMO→LUMO gap = light absorbed</td></tr>
+        </table>
+      </div>
+      <div class="card tiers">
+        <h3>Status discipline</h3>
+        <div class="row"><span class="tag lit">Literal</span><span>N AOs → N MOs, filled aufbau; bond order = ½(bonding−antibonding); O₂ paramagnetic (2 unpaired π*); benzene's 6 π e⁻ fill 3 bonding MOs → closed shell → aromatic; 4n+2 = closed shell.</span></div>
+        <div class="row"><span class="tag bri">Bridge</span><span>The honest frame under hybridization, Kekulé, and resonance; H₂'s σ/σ* generalized; benzene's torus resolved into 6 MOs with nodes.</span></div>
+        <div class="row"><span class="tag spec">Speculative</span><span>MO theory is still the orbital (mean-field) approximation — real electrons correlate. The simple Hückel π-only model ignores σ; both are excellent, not exact.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer><b>What is being claimed.</b> Literal: combining atomic orbitals gives the same number of molecular orbitals, spread across the whole molecule and filled from the bottom up; subtracting antibonding from bonding electrons and halving gives the bond order, which correctly yields zero for He₂, three for N₂, and two for O₂ — and for O₂ the last two electrons must occupy two equal-energy antibonding orbitals singly, leaving them unpaired, which is why liquid oxygen is drawn to a magnet and the simple Lewis double bond is wrong. Benzene's six p orbitals give six π molecular orbitals whose energies trace a circle; the six electrons fill the three bonding ones into a closed shell, and the closed-shell counts 2, 6, 10 are exactly Hückel's 4n+2. Resonance structures are a localized average of this single delocalized reality. The honest limit: this is still a mean-field orbital model that omits electron correlation, and Hückel treats only the π system — superb, not exact.
+  <div class="mono dim" style="margin-top:12px">MO THEORY · N AOs → N MOs · bond order = ½(bond−antibond) · O₂ paramagnetic · 4n+2 = closed shell</div></footer>
+</div>
+
+<script>
+"use strict";
+(function(){
+  var cv=document.getElementById("c"), ctx=cv.getContext("2d");
+  var CSS=getComputedStyle(document.documentElement), gv=function(n){return CSS.getPropertyValue(n).trim();};
+  var C={bond:gv("--bond"),anti:gv("--anti"),elec:gv("--elec"),pp:gv("--phasep"),pn:gv("--phasen"),homo:gv("--homo"),soft:"#8C92A6",ink:"#E7E9F2"};
+  var W=660,Hh=400;
+  // diatomic MO data: levels bottom(most bonding)->top, e=electrons, deg=degeneracy(1 or 2), type
+  var MOL={
+    H2:{ao:"1s", lv:[{l:"σ1s",e:2,deg:1,t:"b"},{l:"σ*1s",e:0,deg:1,t:"a"}], bo:1, mag:"diamagnetic"},
+    He2:{ao:"1s", lv:[{l:"σ1s",e:2,deg:1,t:"b"},{l:"σ*1s",e:2,deg:1,t:"a"}], bo:0, mag:"no bond"},
+    N2:{ao:"2s 2p", lv:[{l:"σ2s",e:2,deg:1,t:"b"},{l:"σ*2s",e:2,deg:1,t:"a"},{l:"π2p",e:4,deg:2,t:"b"},{l:"σ2p",e:2,deg:1,t:"b"},{l:"π*2p",e:0,deg:2,t:"a"},{l:"σ*2p",e:0,deg:1,t:"a"}], bo:3, mag:"diamagnetic"},
+    O2:{ao:"2s 2p", lv:[{l:"σ2s",e:2,deg:1,t:"b"},{l:"σ*2s",e:2,deg:1,t:"a"},{l:"σ2p",e:2,deg:1,t:"b"},{l:"π2p",e:4,deg:2,t:"b"},{l:"π*2p",e:2,deg:2,t:"a"},{l:"σ*2p",e:0,deg:1,t:"a"}], bo:2, mag:"paramagnetic"}
+  };
+  var st={mode:"lcao", mol:"O2", labels:true, t:0};
+
+  function dpr(){var d=window.devicePixelRatio||1;var r=cv.getBoundingClientRect();
+    cv.width=Math.round(r.width*d);cv.height=Math.round(r.width*d*(400/660));
+    W=r.width;Hh=r.width*(400/660);ctx.setTransform(d,0,0,d,0,0);}
+
+  function spinArrow(x,y,up,col){ctx.strokeStyle=col;ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(x,y-6);ctx.lineTo(x,y+6);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,up?y-6:y+6);ctx.lineTo(x-3,up?y-2:y+2);ctx.moveTo(x,up?y-6:y+6);ctx.lineTo(x+3,up?y-2:y+2);ctx.stroke();}
+
+  function drawLCAO(){
+    ctx.clearRect(0,0,W,Hh);
+    var M=MOL[st.mol], n=M.lv.length;
+    var top=46, bot=Hh-46, cxm=W*0.5, cw=W*0.26;
+    var yfor=function(i){return bot-(i/(n-1))*(bot-top);};
+    // AO columns (left & right) at mid energy
+    var midY=(top+bot)/2;
+    function aolevel(x){ctx.strokeStyle=C.soft;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-22,midY);ctx.lineTo(x+22,midY);ctx.stroke();}
+    aolevel(cxm-cw); aolevel(cxm+cw);
+    if(st.labels){ctx.fillStyle=C.soft;ctx.font="11px ui-monospace,Menlo,monospace";ctx.textAlign="center";
+      ctx.fillText("atom A "+M.ao,cxm-cw,top-16);ctx.fillText("atom B "+M.ao,cxm+cw,top-16);ctx.fillText("molecular orbitals",cxm,top-16);}
+    // MO levels
+    M.lv.forEach(function(L,i){var y=yfor(i), col=L.t==="b"?C.bond:C.anti;
+      // connecting lines to AOs
+      ctx.strokeStyle="rgba(120,134,158,0.25)";ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(cxm-cw+18,midY);ctx.lineTo(cxm-26,y);ctx.moveTo(cxm+cw-18,midY);ctx.lineTo(cxm+26,y);ctx.stroke();
+      if(L.deg===2){ // two orbitals side by side
+        [-16,16].forEach(function(dx){ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(cxm+dx-13,y);ctx.lineTo(cxm+dx+13,y);ctx.stroke();});
+        // electrons: Hund — fill singly then pair
+        var e=L.e;
+        var slots=[cxm-16,cxm+16];
+        if(e<=2){ for(var k=0;k<e;k++) spinArrow(slots[k],y,true,C.elec); }
+        else { spinArrow(slots[0],y,true,C.elec);spinArrow(slots[0],y,false,C.elec); var r=e-2; for(var k2=0;k2<r;k2++) spinArrow(slots[1],y,k2===0,C.elec); }
+        if(L.e===2 && L.t==="a"){ // O2 paramagnetic highlight
+          ctx.strokeStyle=C.homo;ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.strokeRect(cxm-34,y-14,68,28);ctx.setLineDash([]);
+          if(st.labels){ctx.fillStyle=C.homo;ctx.font="9px ui-monospace,Menlo,monospace";ctx.textAlign="center";ctx.fillText("2 unpaired → magnetic",cxm,y-18);}
+        }
+      } else {
+        ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(cxm-20,y);ctx.lineTo(cxm+20,y);ctx.stroke();
+        if(L.e>=1) spinArrow(cxm-5,y,true,C.elec); if(L.e>=2) spinArrow(cxm+5,y,false,C.elec);
+      }
+      if(st.labels){ctx.fillStyle=col;ctx.font="10px ui-monospace,Menlo,monospace";ctx.textAlign="left";ctx.fillText(L.l, cxm+ (L.deg===2?40:26), y+3);}
+    });
+    // verdict
+    if(st.labels){ctx.fillStyle=C.ink;ctx.font="13px ui-monospace,Menlo,monospace";ctx.textAlign="center";
+      ctx.fillText(st.mol+"  ·  bond order "+M.bo+"  ·  "+M.mag, cxm, bot+30);}
+    document.getElementById("s-view").textContent=st.mol+" — LCAO";
+    document.getElementById("s-bo").textContent=M.bo;
+    document.getElementById("s-verd").textContent=M.mag;
+    document.getElementById("s-verd").style.color = M.mag==="paramagnetic"?C.homo:(M.mag==="no bond"?C.anti:C.bond);
+  }
+
+  // benzene pi MOs (Frost): energies (bottom->top) with degeneracy and node count
+  function drawBenzene(){
+    ctx.clearRect(0,0,W,Hh);
+    var levels=[ {y:0,deg:1,nodes:0,e:2,lab:"ψ1"},{y:1,deg:2,nodes:1,e:4,lab:"ψ2,ψ3"},{y:2,deg:2,nodes:2,e:0,lab:"ψ4,ψ5"},{y:3,deg:1,nodes:3,e:0,lab:"ψ6"} ];
+    var top=50,bot=Hh-60, colX=W*0.30;
+    function Y(rank){return bot-(rank/3)*(bot-top);} // rank 0..3
+    // Frost circle (left)
+    var fcx=W*0.13, fcy=(top+bot)/2, fr=(bot-top)/2;
+    ctx.strokeStyle="rgba(120,134,158,0.4)";ctx.lineWidth=1;ctx.beginPath();ctx.arc(fcx,fcy,fr,0,Math.PI*2);ctx.stroke();
+    // hexagon point-down inscribed -> vertices at angles
+    ctx.strokeStyle="rgba(91,200,224,0.5)";ctx.lineWidth=1.4;ctx.beginPath();
+    for(var k=0;k<=6;k++){var a=-Math.PI/2 + k*Math.PI/3; var x=fcx+Math.cos(a)*fr,y=fcy+Math.sin(a)*fr; if(k===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);} ctx.stroke();
+    // nonbonding line
+    ctx.strokeStyle="rgba(120,134,158,0.3)";ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(fcx-fr-6,fcy);ctx.lineTo(colX+120,fcy);ctx.stroke();ctx.setLineDash([]);
+    if(st.labels){ctx.fillStyle=C.soft;ctx.font="9px ui-monospace,Menlo,monospace";ctx.textAlign="left";ctx.fillText("nonbonding (α)",colX+124,fcy+3);ctx.fillText("Frost circle",fcx-26,fcy+fr+16);}
+    // energy levels with node-pattern mini rings + electrons
+    levels.forEach(function(L){
+      var ry= L.y<=1? Y(L.y) : (L.y===2? Y(2): Y(3)); // map rank
+      var rank = L.y; var y=Y(rank);
+      var col = rank<1.5? C.bond : C.anti; if(rank===1.5)col=C.soft;
+      var slots = L.deg===2? [colX-30,colX+30]:[colX];
+      slots.forEach(function(sx,idx){
+        ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(sx-22,y);ctx.lineTo(sx+22,y);ctx.stroke();
+        // mini node-pattern hexagon above the level
+        drawMOnodes(sx, y-26, L.nodes, idx);
+      });
+      // electrons (closed shell: fill bottom 3 MOs => ranks 0 and 1(deg2))
+      if(rank===0){ spinArrow(colX-5,y,true,C.elec);spinArrow(colX+5,y,false,C.elec); }
+      if(rank===1){ spinArrow(colX-30,y,true,C.elec);spinArrow(colX-30,y,false,C.elec);spinArrow(colX+30,y,true,C.elec);spinArrow(colX+30,y,false,C.elec); }
+      if(st.labels){ctx.fillStyle=col;ctx.font="10px ui-monospace,Menlo,monospace";ctx.textAlign="left";ctx.fillText(L.lab+"  ("+L.nodes+(L.nodes===1?" node":" nodes")+")", colX+ (L.deg===2?64:30), y+3);}
+    });
+    // HOMO/LUMO
+    if(st.labels){ctx.fillStyle=C.homo;ctx.font="10px ui-monospace,Menlo,monospace";ctx.textAlign="right";
+      ctx.fillText("HOMO →",colX-44,Y(1)+3); ctx.fillText("LUMO →",colX-44,Y(2)+3);}
+    ctx.fillStyle=C.ink;ctx.font="13px ui-monospace,Menlo,monospace";ctx.textAlign="center";
+    ctx.fillText("6 π e⁻ fill 3 bonding MOs → closed shell → AROMATIC  (2,6,10 = 4n+2)", W*0.5, Hh-22);
+    document.getElementById("s-view").textContent="benzene π MOs";
+    document.getElementById("s-bo").textContent="—";
+    document.getElementById("s-verd").textContent="aromatic (closed shell)";
+    document.getElementById("s-verd").style.color=C.bond;
+  }
+  function drawMOnodes(cx,cy,nodes,which){
+    var r=11;
+    // 6 p-lobes around a ring, phase pattern by nodes
+    for(var i=0;i<6;i++){var a=i/6*Math.PI*2-Math.PI/2; var x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;
+      var phase;
+      if(nodes===0) phase=1;
+      else if(nodes===3) phase=(i%2===0)?1:-1;
+      else if(nodes===1) phase=(Math.cos(a- (which? Math.PI/2:0))>=0)?1:-1;
+      else phase=(Math.cos(2*(a-(which?Math.PI/4:0)))>=0)?1:-1;
+      ctx.fillStyle=phase>0?"rgba(62,146,214,0.9)":"rgba(224,88,75,0.9)";
+      ctx.beginPath();ctx.arc(x,y,2.2,0,Math.PI*2);ctx.fill();
+    }
+    ctx.strokeStyle="rgba(120,134,158,0.25)";ctx.lineWidth=0.7;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+  }
+
+  function setMode(m){st.mode=m;document.getElementById("mLcao").setAttribute("aria-pressed",m==="lcao");document.getElementById("mBz").setAttribute("aria-pressed",m==="benzene");}
+  function setMol(m){st.mol=m;["h2","he2","n2","o2"].forEach(function(id){document.getElementById(id).setAttribute("aria-pressed",id.toUpperCase()===m.toUpperCase());});setMode("lcao");}
+  function frame(){st.t+=0.016; if(st.mode==="lcao")drawLCAO();else drawBenzene(); requestAnimationFrame(frame);}
+  document.getElementById("mLcao").onclick=function(){setMode("lcao");};
+  document.getElementById("mBz").onclick=function(){setMode("benzene");};
+  document.getElementById("h2").onclick=function(){setMol("H2");};
+  document.getElementById("he2").onclick=function(){setMol("He2");};
+  document.getElementById("n2").onclick=function(){setMol("N2");};
+  document.getElementById("o2").onclick=function(){setMol("O2");};
+  document.getElementById("lbl").onclick=function(){st.labels=!st.labels;this.setAttribute("aria-pressed",st.labels);};
+  function init(){dpr();requestAnimationFrame(frame);}
+  window.addEventListener("resize",dpr);
+  init();
+})();
+</script>
+</body>
+</html>

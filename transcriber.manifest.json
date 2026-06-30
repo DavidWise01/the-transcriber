@@ -1,0 +1,150 @@
+{
+  "scheme": "AKASHA-transcriber-bundle",
+  "domain": "AKASHA-transcriber-v1",
+  "instruments": [
+    {
+      "role": "mechanism",
+      "file": "transcriber-gated.html",
+      "sha256": "661920a72f16a679be4b61f0b7206b309bbc3972a63164a215d7b78101000d64"
+    },
+    {
+      "role": "forecast",
+      "file": "predictive-smear.html",
+      "sha256": "86514f58cbc4842f6c190235d1af2a6e327deb3470fa60637975b9c022165c32"
+    },
+    {
+      "role": "layers",
+      "file": "four-fold-transcription.html",
+      "sha256": "35bff105d881f9cd0d54d09bbacbdda1e52f6fd7742e06292bfc25b10e64e7f0"
+    },
+    {
+      "role": "closure",
+      "file": "two-transcribers.html",
+      "sha256": "197839508a0cb668982409772669158fdfb00ea6f1fd15e953d47d74255a95d2"
+    },
+    {
+      "role": "ground-single",
+      "file": "hydrogen-transcriber.html",
+      "sha256": "92c0deed2d31e138a432c75c71aaae680f9d6b641e986417b910aa29822fcd66"
+    },
+    {
+      "role": "ground-pair",
+      "file": "two-atom-transfer.html",
+      "sha256": "4ca90e9e961024e10a5652ea858b2a862130e31996f3c067ee629e3e6784516a"
+    },
+    {
+      "role": "compound-covalent",
+      "file": "h2-bond.html",
+      "sha256": "96f39ad4f5acfdc8b122330192f98b8df0fa5e0a9aad4d1d9898d3098f55a398"
+    },
+    {
+      "role": "compound-ionic",
+      "file": "nacl-bond.html",
+      "sha256": "ea4a4717345b535e32c8e3210faeaabbf3eac72b9169232c5a233c9690890265"
+    },
+    {
+      "role": "compound-metallic",
+      "file": "metallic-bond.html",
+      "sha256": "7900f30da85cce8bab33e7f19aba43f3f4f404fe2bc3bc906e6a496b2e72242c"
+    },
+    {
+      "role": "compound-geometry",
+      "file": "water-geometry.html",
+      "sha256": "b4c02d1269448c543670fd9eb7d6ab30e7d79552cf589554400d0bc9f0e95e79"
+    },
+    {
+      "role": "compound-hybridization",
+      "file": "hybridization.html",
+      "sha256": "10256269aa4086761b2b68253a00f7fbbb3e27480b2fa44cc2ae8fd711130527"
+    },
+    {
+      "role": "compound-pi",
+      "file": "pi-bonds.html",
+      "sha256": "ae698db029b17b0a073b642811c7408330beb1fa9cd683105edbf614d31faab1"
+    },
+    {
+      "role": "compound-hbond",
+      "file": "hydrogen-bonding.html",
+      "sha256": "72cc56c61f069e2c50c2694b5c676054864717e454eae25f0b95e33500a9d864"
+    },
+    {
+      "role": "compound-aromaticity",
+      "file": "aromaticity.html",
+      "sha256": "24ea3fe3bbc25ff671f79e98f6e9164f2046eec4960bfefefb774cc6c0097b9e"
+    },
+    {
+      "role": "compound-mo",
+      "file": "mo-theory.html",
+      "sha256": "241ebc441fd72193c9383b743b6925b7816fa9aa1baf160eb9fbd6a7ca3176e4"
+    },
+    {
+      "role": "overlay",
+      "file": "transcriber-mo-overlay.html",
+      "sha256": "ac31a824d3287dc37c89d5789ebbe4bb832a66c04667d561a3bc1d3b60936b33"
+    },
+    {
+      "role": "machine-emulator",
+      "file": "pent3-emulator.html",
+      "sha256": "68c77f1f9022b4f82daa7eaed7133d9e81b91d15bd8056960333ee802d1a1952"
+    },
+    {
+      "role": "machine-hydrogen-trit",
+      "file": "hydrogen-trit.html",
+      "sha256": "1e9d7a82d7551293186fccaeac6a29c33573c7998cde4ae336c5db274b4817d7"
+    },
+    {
+      "role": "machine-hydrogen-vm",
+      "file": "hydrogen-vm.html",
+      "sha256": "45e916eb83a817034e3458db7a910749fc370985a9b6c2ff8a53b31a34028cc8"
+    },
+    {
+      "role": "switch-v1-halfduplex",
+      "file": "switch-v1.html",
+      "sha256": "0b15799e5b505017d49474ef930beb8bcbdd32fd12fe5c204ec08edd87e1af57"
+    },
+    {
+      "role": "switch-v2-fullduplex",
+      "file": "switch-v2.html",
+      "sha256": "d31a6bfa206b376fa59df1f5085dbec70d1be1206745a8785e255c058b583e34"
+    },
+    {
+      "role": "generator-carpet",
+      "file": "ternary-generator.html",
+      "sha256": "0bde1ca94fcfb9a75f9f733a0ffd800cbd740a88c3f198aa464491b529375147"
+    },
+    {
+      "role": "loom-pull-test",
+      "file": "the-loom.html",
+      "sha256": "c0786a18692d3d32c5814a78c1c955eafea35e4bad9fcf5e10e4bbbf20a680da"
+    },
+    {
+      "role": "ripple-inference",
+      "file": "ripple-inference.html",
+      "sha256": "918e3a9dbcf9f4f3a9740402026c6ee0fd77f5d889d954900e9e8369f4a2ff77"
+    },
+    {
+      "role": "scaffolding-rule",
+      "file": "scaffolding.html",
+      "sha256": "ddadb3d96dfd58122b3d8523e687f1925f072f4442e1340bc3721c4cf600b7d4"
+    },
+    {
+      "role": "scaffolding-value",
+      "file": "value-box.html",
+      "sha256": "c077a21e7e9cb3aa03fd032f7f7e2b4ccab49f9a7865430b930c75b544cd54e3"
+    }
+  ],
+  "construction_root": "f050142875633e6d224e35ad3da9af80d56ebe12476291ab42151fd39e33aa39",
+  "cover": {
+    "file": "transcriber-bound.html",
+    "note": "presentation only; not part of the signed root"
+  },
+  "signature": {
+    "status": "signed",
+    "scheme": "ed25519",
+    "target": "construction_root",
+    "signed_root": "f050142875633e6d224e35ad3da9af80d56ebe12476291ab42151fd39e33aa39",
+    "public_key": "a99581671b4fee169fa29457b27efa558e18dad839ad2485279f2e8616491b5f",
+    "signature": "0ae9a85837c63896e650cc7e573ee43607388a93f5094ed54394d906b5d883d4c053053ab115f42b72c904739d12cd6ad828d3a88ccdbed2f53a7d8887de7004",
+    "signed_at": "2026-06-30T07:55:35+00:00"
+  }
+}
